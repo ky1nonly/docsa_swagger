@@ -1,0 +1,3947 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Docsa API",
+    "description": "Docsa의 백엔드 API 명세입니다.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Auth API"
+    }
+  ],
+  "paths": {
+    "/api/document/{docId}/save/{saveId}": {
+      "get": {
+        "tags": [
+          "Save API"
+        ],
+        "summary": "유저가 요청한 저장 id에 해당하는 저장 조회",
+        "description": "유저가 소유한 문서의 저장을 조회합니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n",
+        "operationId": "getSave",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "저장이 속한 문서 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "saveId",
+            "in": "path",
+            "description": "조회하려는 저장 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "저장 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveGetResponse"
+                },
+                "example": {
+                  "updatedAt": "2025-07-07T14:21:00",
+                  "content": [
+                    {
+                      "id": "mhTl6ghSkV",
+                      "type": "paragraph",
+                      "data": {
+                        "text": "Hey. Meet the new Editor. On this picture you can see it in action. Then, try a demo 🤓"
+                      }
+                    },
+                    {
+                      "id": "l98dyx3yjb",
+                      "type": "header",
+                      "data": {
+                        "text": "Key features",
+                        "level": 3
+                      }
+                    },
+                    {
+                      "id": "os_YI4eub4",
+                      "type": "list",
+                      "data": {
+                        "type": "unordered",
+                        "items": [
+                          "It is a block-style editor",
+                          "It returns clean data output in JSON",
+                          "Designed to be extendable and pluggable with a simple API"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "저장 조회 실패 - 요청을 보낸 유저의 저장이 아님",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 400,
+                  "message": "잘못된 접근입니다",
+                  "error": "SAVE_NOT_OWNER"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "저장 조회 실패 - 존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 저장": {
+                    "description": "존재하지 않는 저장",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 저장 데이터를 찾을 수 없습니다.",
+                      "error": "SAVE_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "저장 조회 실패 - MySQL 또는 MongoDB 접근 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Save API"
+        ],
+        "summary": "유저가 요청한 저장 id에 해당하는 저장 수정",
+        "description": "유저가 소유한 문서의 저장을 수정합니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n",
+        "operationId": "updateSave",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "저장이 속한 문서 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "saveId",
+            "in": "path",
+            "description": "조회하려는 저장 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveUpdateRequest"
+              },
+              "example": {
+                "content": [
+                  {
+                    "id": "mhTl6ghSkV",
+                    "type": "paragraph",
+                    "data": {
+                      "text": "Hey. Meet the new Editor. On this picture you can see it in action. Then, try a demo 🤓"
+                    }
+                  },
+                  {
+                    "id": "l98dyx3yjb",
+                    "type": "header",
+                    "data": {
+                      "text": "Key features",
+                      "level": 3
+                    }
+                  },
+                  {
+                    "id": "os_YI4eub4",
+                    "type": "list",
+                    "data": {
+                      "type": "unordered",
+                      "items": [
+                        "It is a block-style editor",
+                        "It returns clean data output in JSON",
+                        "Designed to be extendable and pluggable with a simple API"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "저장 수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveUpdateResponse"
+                },
+                "example": {
+                  "updatedAt": "2025-07-07T14:21:00"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "저장 수정 실패 - 요청을 보낸 유저의 저장이 아님",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 400,
+                  "message": "잘못된 접근입니다",
+                  "error": "SAVE_NOT_OWNER"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "저장 수정 실패 - 존재하지 않는 저장",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 404,
+                  "message": "해당 저장 데이터를 찾을 수 없습니다.",
+                  "error": "SAVE_NOT_FOUND"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "저장 수정 실패 - MySQL 또는 MongoDB 접근 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Save API"
+        ],
+        "summary": "유저가 요청한 저장 id에 해당하는 저장 삭제",
+        "description": "유저가 소유한 문서의 저장을 삭제합니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n",
+        "operationId": "deleteSave",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "저장이 속한 문서 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "saveId",
+            "in": "path",
+            "description": "조회하려는 저장 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "저장 삭제 성공"
+          },
+          "400": {
+            "description": "저장 삭제 실패 - 잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "해당 유저의 수정이 아님": {
+                    "description": "해당 유저의 수정이 아님",
+                    "value": {
+                      "status": 400,
+                      "message": "잘못된 접근입니다",
+                      "error": "SAVE_NOT_OWNER"
+                    }
+                  },
+                  "해당 브랜치에 커밋이 하나도 없고 저장만 존재하는 최초 상태에서는 저장을 삭제할 수 없다.": {
+                    "description": "해당 브랜치에 커밋이 하나도 없고 저장만 존재하는 최초 상태에서는 저장을 삭제할 수 없다.",
+                    "value": {
+                      "status": 400,
+                      "message": "버전에 기록이 하나도 없는 경우, 저장을 삭제할 수 없습니다.",
+                      "error": "CANNOT_DELETE_SAVE_WITH_NO_COMMIT"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "저장 삭제 실패 - 존재하지 않는 저장",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 404,
+                  "message": "해당 저장 데이터를 찾을 수 없습니다.",
+                  "error": "SAVE_NOT_FOUND"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "저장 삭제 실패 - MySQL 또는 MongoDB 접근 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/signup": {
+      "post": {
+        "tags": [
+          "User API"
+        ],
+        "summary": "회원가입",
+        "description": "이메일 인증이 완료된 사용자가 회원 정보를 입력하여 회원가입을 완료합니다.\n`passCode`는 인증코드 검증 API(`/api/auth/code/check`)를 통해 발급된 값이어야 합니다.\n로그인 상태에서는 접근할 수 없습니다.\n",
+        "operationId": "signup",
+        "requestBody": {
+          "description": "회원가입 요청 본문",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserSignupRequest"
+              },
+              "examples": {
+                "회원가입 요청 예시": {
+                  "description": "회원가입 요청 예시",
+                  "value": {
+                    "name": "이장님",
+                    "email": "user@example.com",
+                    "password": "Password123",
+                    "passCode": "a1b2c3d4"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "회원가입 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSignupResponse"
+                },
+                "examples": {
+                  "회원가입 성공 응답 예시": {
+                    "description": "회원가입 성공 응답 예시",
+                    "value": {
+                      "id": 1,
+                      "name": "홍길동"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "인증 코드 만료 또는 불일치",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "EXPIRED_CODE": {
+                    "description": "EXPIRED_CODE",
+                    "value": {
+                      "status": 400,
+                      "message": "인증코드가 만료되었습니다.",
+                      "error": "EXPIRED_CODE"
+                    }
+                  },
+                  "INVALID_CODE": {
+                    "description": "INVALID_CODE",
+                    "value": {
+                      "status": 400,
+                      "message": "인증코드가 올바르지 않습니다.",
+                      "error": "INVALID_CODE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "로그인 상태에서는 사용할 수 없음",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ACCESS_DENIED": {
+                    "description": "ACCESS_DENIED",
+                    "value": {
+                      "status": 403,
+                      "message": "이미 로그인된 상태입니다.",
+                      "error": "ACCESS_DENIED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/password": {
+      "post": {
+        "tags": [
+          "User API"
+        ],
+        "summary": "비밀번호 변경",
+        "description": "인증이 완료된 사용자가 비밀번호를 변경합니다.\n`passCode`는 인증코드 검증 API(`/api/auth/code/check`)를 통해 발급된 값이어야 합니다.\n비밀번호는 대소문자+숫자를 포함하여 8자 이상이어야 합니다.\n",
+        "operationId": "resetPassword",
+        "requestBody": {
+          "description": "비밀번호 변경 요청 본문",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetRequest"
+              },
+              "examples": {
+                "비밀번호 변경 요청 예시": {
+                  "description": "비밀번호 변경 요청 예시",
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "NewPassword123",
+                    "passCode": "a1b2c3d4"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "비밀번호 변경 성공"
+          },
+          "400": {
+            "description": "사용자 없음 또는 인증 실패",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "USER_NOT_FOUND": {
+                    "description": "USER_NOT_FOUND",
+                    "value": {
+                      "status": 400,
+                      "message": "해당 이메일의 사용자를 찾을 수 없습니다.",
+                      "error": "USER_NOT_FOUND"
+                    }
+                  },
+                  "EXPIRED_CODE": {
+                    "description": "EXPIRED_CODE",
+                    "value": {
+                      "status": 400,
+                      "message": "인증코드가 만료되었습니다.",
+                      "error": "EXPIRED_CODE"
+                    }
+                  },
+                  "INVALID_CODE": {
+                    "description": "INVALID_CODE",
+                    "value": {
+                      "status": 400,
+                      "message": "인증코드가 올바르지 않습니다.",
+                      "error": "INVALID_CODE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "시스템 내부 오류",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "INTERNAL_ERROR": {
+                    "description": "INTERNAL_ERROR",
+                    "value": {
+                      "status": 500,
+                      "message": "비밀번호 변경 처리 중 시스템 오류가 발생했습니다.",
+                      "error": "INTERNAL_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/logout": {
+      "post": {
+        "tags": [
+          "User API"
+        ],
+        "summary": "로그아웃",
+        "description": "현재 로그인된 세션을 무효화하여 로그아웃합니다.\n클라이언트는 세션 쿠키(`JSESSIONID`)를 포함한 상태에서 요청해야 합니다.\n세션이 없는 상태에서 요청하면 인증 오류가 발생합니다.\n",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "로그아웃 성공"
+          },
+          "401": {
+            "description": "로그인되지 않은 상태",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "LOGIN_REQUIRED": {
+                    "description": "LOGIN_REQUIRED",
+                    "value": {
+                      "status": 401,
+                      "message": "로그인이 필요합니다.",
+                      "error": "LOGIN_REQUIRED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "tags": [
+          "User API"
+        ],
+        "summary": "로그인",
+        "description": "사용자가 이메일과 비밀번호를 입력하여 로그인을 시도합니다.\n세션 방식으로 로그인하며, 성공 시 JSESSIONID 쿠키가 발급됩니다.\n이미 로그인된 상태에서는 로그인할 수 없습니다.\n",
+        "operationId": "login",
+        "requestBody": {
+          "description": "로그인 요청 본문",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              },
+              "examples": {
+                "로그인 요청 예시": {
+                  "description": "로그인 요청 예시",
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "Password123"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                },
+                "examples": {
+                  "로그인 성공 응답 예시": {
+                    "description": "로그인 성공 응답 예시",
+                    "value": {
+                      "id": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "이메일 또는 비밀번호가 일치하지 않음",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "INVALID_CREDENTIALS": {
+                    "description": "INVALID_CREDENTIALS",
+                    "value": {
+                      "status": 401,
+                      "message": "이메일 또는 비밀번호가 잘못되었습니다.",
+                      "error": "INVALID_CREDENTIALS"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "로그인 상태에서는 사용할 수 없음",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ACCESS_DENIED": {
+                    "description": "ACCESS_DENIED",
+                    "value": {
+                      "status": 403,
+                      "message": "이미 로그인된 상태입니다.",
+                      "error": "ACCESS_DENIED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document": {
+      "get": {
+        "tags": [
+          "Document API"
+        ],
+        "summary": "전체 문서 목록 조회",
+        "description": "로그인한 사용자의 문서 목록을 페이지네이션과 정렬 옵션에 따라 조회합니다.\n정렬 필드는 기본적으로 updatedAt이며, order는 desc가 기본값입니다.\n",
+        "operationId": "readList",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "정렬 기준 필드 (예: updatedAt, createdAt)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "updatedAt"
+            },
+            "example": "updatedAt"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "정렬 순서 (asc 또는 desc)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "desc"
+            },
+            "example": "desc"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "페이지 번호 (0부터 시작)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "페이지 크기",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "문서 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageDocListResponse"
+                },
+                "example": {
+                  "content": [
+                    {
+                      "id": 3,
+                      "title": "새 문서 제목 3",
+                      "createdAt": "2025-07-22T04:48:43.036421+09:00",
+                      "updatedAt": "2025-07-22T04:48:43.065674+09:00",
+                      "preview": "이문서의 마지막 저장or커밋의 일부분미리보기 부분~~",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 3
+                      }
+                    },
+                    {
+                      "id": 2,
+                      "title": "새 문서 제목 2",
+                      "createdAt": "2025-07-22T04:48:40.02776+09:00",
+                      "updatedAt": "2025-07-22T04:48:40.056721+09:00",
+                      "preview": "미리보기 없음",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 2
+                      }
+                    },
+                    {
+                      "id": 1,
+                      "title": "새 문서 제목",
+                      "createdAt": "2025-07-22T04:48:35.242338+09:00",
+                      "updatedAt": "2025-07-22T04:48:35.348708+09:00",
+                      "preview": "미리보기 없음",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 1
+                      }
+                    }
+                  ],
+                  "pageable": {
+                    "pageNumber": 0,
+                    "pageSize": 10,
+                    "sort": {
+                      "empty": false,
+                      "sorted": true,
+                      "unsorted": false
+                    },
+                    "offset": 0,
+                    "paged": true,
+                    "unpaged": false
+                  },
+                  "last": true,
+                  "totalPages": 1,
+                  "totalElements": 3,
+                  "first": true,
+                  "size": 10,
+                  "number": 0,
+                  "sort": {
+                    "empty": false,
+                    "sorted": true,
+                    "unsorted": false
+                  },
+                  "numberOfElements": 3,
+                  "empty": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "정렬 실패 - 정렬 옵션이 잘못됨",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "정렬 기준이 잘못됨": {
+                    "description": "정렬 기준이 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "지원하지 않는 정렬 기준입니다.",
+                      "error": "UNSUPPORTED_SORT_TYPE"
+                    }
+                  },
+                  "정렬 방향이 잘못됨": {
+                    "description": "정렬 방향이 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "지원하지 않는 정렬 방향입니다.",
+                      "error": "UNSUPPORTED_DIRECTION_TYPE"
+                    }
+                  },
+                  "페이지 크기가 잘못됨": {
+                    "description": "페이지 크기가 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "페이지 크기는 0 이상이어야 합니다.",
+                      "error": "INVALID_PAGE_SIZE"
+                    }
+                  },
+                  "페이지 번호가 잘못됨": {
+                    "description": "페이지 번호가 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "페이지 번호는 0 이상이어야 합니다.",
+                      "error": "INVALID_PAGE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "저장을 찾을 수 없음.": {
+                    "description": "저장을 찾을 수 없음.",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 저장 데이터를 찾을 수 없습니다.",
+                      "error": "SAVE_NOT_FOUND"
+                    }
+                  },
+                  "커밋 내용을 찾을 수 없음.": {
+                    "description": "커밋 내용을 찾을 수 없음.",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 기록을 찾을 수 없습니다.",
+                      "error": "COMMIT_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버오류로 인한 문서 조회 실패.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Document API"
+        ],
+        "summary": "문서 생성",
+        "description": "문서를 생성하면 기본 브랜치와 저장을 생성하고, 생성된 문서와 저장의 ID를 반환",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocTitleRequest"
+              },
+              "example": {
+                "title": "new Title"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "문서 생성 성공(기본 브랜치/저장 생성)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocCreateResponse"
+                },
+                "example": {
+                  "id": 1,
+                  "saveId": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "유효하지 않은 문서 제목 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "이미 존재하는 문서 제목": {
+                    "description": "이미 존재하는 문서 제목",
+                    "value": {
+                      "status": 400,
+                      "message": "이미 사용중인 제목입니다.",
+                      "error": "TITLE_DUPLICATION"
+                    }
+                  },
+                  "문서 제목이 빈칸(null, 공백 등)": {
+                    "description": "문서 제목이 빈칸(null, 공백 등)",
+                    "value": {
+                      "status": 400,
+                      "message": "문서제목을 입력해주세요.",
+                      "error": "VALIDATION_FAILED"
+                    }
+                  },
+                  "문서 제목이 최대 길이 초과(50자)": {
+                    "description": "문서 제목이 최대 길이 초과(50자)",
+                    "value": {
+                      "status": 400,
+                      "message": "문서제목은 50자를 초과 할 수 없습니다.",
+                      "error": "VALIDATION_FAILED"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버오류로 인한 문서 생성 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/{documentId}/branch": {
+      "post": {
+        "tags": [
+          "Branch API"
+        ],
+        "summary": "이어서 작업하기",
+        "description": "새로운 저장을 만듭니다. 직전에 선택한 직전 기록의 종류에 따라 다음을 실행합니다:\n\n- 최신기록에서 이어서 작업할 경우 그 버전에 새로운 저장 생성\n- 아니라면 새로운 버전 생성 후 새로운 저장 생성\n",
+        "operationId": "createBranchOrSave",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchCreateRequest"
+              },
+              "example": {
+                "name": "main",
+                "fromCommitId": 10
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "이어서 작업하기 성공 (새로운 저장 or 새로운 버전&저장 생성)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BranchCreateResponse"
+                },
+                "example": {
+                  "branchId": 1,
+                  "saveId": 4
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "이어서 작업하기 실패 - 잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "요청으로 온 fromCommitId 이 null": {
+                    "description": "요청으로 온 fromCommitId 이 null",
+                    "value": {
+                      "status": 400,
+                      "message": "잘못된 요청입니다.",
+                      "error": "INVALID_FROM_COMMIT"
+                    }
+                  },
+                  "기록이 해당 문서에 포함되어 있지 않음": {
+                    "description": "기록이 해당 문서에 포함되어 있지 않음",
+                    "value": {
+                      "status": 400,
+                      "message": "기록이 해당 문서에 속해있지 않습니다.",
+                      "error": "COMMIT_NOT_IN_DOCUMENT"
+                    }
+                  },
+                  "생성하려는 버전의 이름이 이미 다른 버전의 이름으로 존재함": {
+                    "description": "생성하려는 버전의 이름이 이미 다른 버전의 이름으로 존재함",
+                    "value": {
+                      "status": 400,
+                      "message": "새로운 버전의 이름은 다른 버전의 이름과 중복될 수 없습니다.",
+                      "error": "BRANCH_NAME_DUPLICATED"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "이어서 작업하기 실패 - 존재하지 않는 id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 문서": {
+                    "description": "존재하지 않는 문서",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 문서를 찾을 수 없습니다.",
+                      "error": "DOCUMENT_NOT_FOUND"
+                    }
+                  },
+                  "존재하지 않는 기록": {
+                    "description": "존재하지 않는 기록",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 기록을 찾을 수 없습니다.",
+                      "error": "COMMIT_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "이어서 작업하기 실패 - MySQL 또는 MongoDB 저장 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB에 저장 실패": {
+                    "description": "MySQL 또는 MongoDB에 저장 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/{docId}/merge": {
+      "get": {
+        "tags": [
+          "Commit API"
+        ],
+        "summary": "병합할 2개의 기록을 조회합니다.",
+        "description": "유저가 소유한 문서에서 병합할 2개의 기록을 조회합니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n",
+        "operationId": "compareMergeCommit",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "기록들이 속한 문서 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "base",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "2개의 기록(commit) 조회 성공 - content 2개 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareMergeCommitResponse"
+                },
+                "example": {
+                  "base": {
+                    "id": "base123",
+                    "title": "기록A 제목",
+                    "content": [
+                      {
+                        "id": "mhTl6ghSkV",
+                        "type": "paragraph",
+                        "data": {
+                          "text": "Hey. Meet the new Editor. On this picture you can see it in action. Then, try a demo 🤓"
+                        }
+                      }
+                    ]
+                  },
+                  "target": {
+                    "id": "target456",
+                    "title": "기록 B 제목",
+                    "content": [
+                      {
+                        "id": "l98dyx3yjb",
+                        "type": "header",
+                        "data": {
+                          "text": "Key features",
+                          "level": 3
+                        }
+                      },
+                      {
+                        "id": "os_YI4eub4",
+                        "type": "list",
+                        "data": {
+                          "type": "unordered",
+                          "items": [
+                            "It is a block-style editor",
+                            "It returns clean data output in JSON",
+                            "Designed to be extendable and pluggable with a simple API"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "기록(commit) 실패 - 존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 문서": {
+                    "description": "존재하지 않는 문서",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 문서를 찾을 수 없습니다.",
+                      "error": "DOCUMENT_NOT_FOUND"
+                    }
+                  },
+                  "존재하지 않는 기록": {
+                    "description": "존재하지 않는 기록",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 기록를 찾을 수 없습니다.",
+                      "error": "COMMIT_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "기록 조회 실패 - MySQL 또는 MongoDB 데이터 처리 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB 데이터 처리 실패": {
+                    "description": "MySQL 또는 MongoDB 데이터 처리 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Commit API"
+        ],
+        "summary": "request 에 담긴 2개의 commit id 를 기반으로 병합 합니다.",
+        "description": "유저가 소유한 문서에서 기록 2개를 병합 합니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n",
+        "operationId": "mergeCommit",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "병합 하려는 문서의 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeCommitRequest"
+              },
+              "example": {
+                "title": "문서 병합 완료",
+                "description": "병합 커밋입니다.",
+                "baseCommitId": 1,
+                "targetCommitId": 2,
+                "content": [
+                  {
+                    "id": "mhTl6ghSkV",
+                    "type": "paragraph",
+                    "data": {
+                      "text": "Hey. Meet the new Editor. On this picture you can see it in action. Then, try a demo 🤓"
+                    }
+                  },
+                  {
+                    "id": "l98dyx3yjb",
+                    "type": "header",
+                    "data": {
+                      "text": "Key features",
+                      "level": 3
+                    }
+                  },
+                  {
+                    "id": "os_YI4eub4",
+                    "type": "list",
+                    "data": {
+                      "type": "unordered",
+                      "items": [
+                        "It is a block-style editor",
+                        "It returns clean data output in JSON",
+                        "Designed to be extendable and pluggable with a <a href=\"https://editorjs.io/creating-a-block-tool\">simple API</a>"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "기록 병합 성공 후 새로운 기록 생성 및 id 할당",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCommitResponse"
+                },
+                "example": {
+                  "id": 15
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "기록(commit) 병합 실패 - 잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "기록 제목이 없는 경우": {
+                    "description": "기록 제목이 없는 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "기록 제목을 입력해주세요.",
+                      "error": "UNEXPECTED_ERROR"
+                    }
+                  },
+                  "기록 제목이 30자를 넘는 경우": {
+                    "description": "기록 제목이 30자를 넘는 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "기록 제목은 30자를 초과 할 수 없습니다.",
+                      "error": "UNEXPECTED_ERROR"
+                    }
+                  },
+                  "설명이 100자가 넘는 경우": {
+                    "description": "설명이 100자가 넘는 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "기록에 대한 설명은 100자를 초과 할 수 없습니다.",
+                      "error": "UNEXPECTED_ERROR"
+                    }
+                  },
+                  "전달 받은 두 기록이 같은 버전안에 있는 경우": {
+                    "description": "전달 받은 두 기록이 같은 버전안에 있는 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "잘못된 요청입니다.",
+                      "error": "COMMIT_BAD_REQUEST"
+                    }
+                  },
+                  "Leaf Commit이 필요한 상황에 전달 받은 기록이 Leaf Commit이 아닌 경우": {
+                    "description": "Leaf Commit이 필요한 상황에 전달 받은 기록이 Leaf Commit이 아닌 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "버전의 마지막 기록이 아닙니다.",
+                      "error": "IS_NOT_LEAF_COMMIT"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "기록(commit) merge 실패 - 존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 기록": {
+                    "description": "존재하지 않는 기록",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 기록을 찾을 수 없습니다.",
+                      "error": "COMMIT_NOT_FOUND"
+                    }
+                  },
+                  "해당 문서에 속한 버전이 아닐 경우": {
+                    "description": "해당 문서에 속한 버전이 아닐 경우",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 버전을 찾을 수 없습니다.",
+                      "error": "BRANCH_NOT_FOUND_OR_FORBIDDEN"
+                    }
+                  },
+                  "존재하지 않는 문서": {
+                    "description": "존재하지 않는 문서",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 문서를 찾을 수 없습니다.",
+                      "error": "DOCUMENT_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "기록 생성 실패 - MySQL 또는 MongoDB 데이터 처리 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB 데이터 처리 실패": {
+                    "description": "MySQL 또는 MongoDB 데이터 처리 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/{docId}/commit": {
+      "post": {
+        "tags": [
+          "Commit API"
+        ],
+        "summary": "유저가 새로운 기록(commit)을 만듭니다.",
+        "description": "유저가 소유한 문서에서 새로운 기록(commit)을 만듭니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n",
+        "operationId": "createCommit",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "기록하려는 문서의 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommitRequest"
+              },
+              "example": {
+                "title": "문서 초안 작성 완료",
+                "description": "1차 초안 커밋입니다.",
+                "branchId": 1,
+                "blocks": [
+                  {
+                    "id": "mhTl6ghSkV",
+                    "type": "paragraph",
+                    "data": {
+                      "text": "Hey. Meet the new Editor. On this picture you can see it in action. Then, try a demo 🤓"
+                    }
+                  },
+                  {
+                    "id": "os_YI4eub4",
+                    "type": "list",
+                    "data": {
+                      "type": "unordered",
+                      "items": [
+                        "It is a block-style editor",
+                        "It returns clean data output in JSON",
+                        "Designed to be extendable and pluggable with a <a href=\"https://editorjs.io/creating-a-block-tool\">simple API</a>"
+                      ]
+                    }
+                  }
+                ],
+                "blockOrders": [
+                  "mhTl6ghSkV",
+                  "l98dyx3yjb",
+                  "os_YI4eub4"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "기록(commit) 성공 후 생성된 기록 id 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCommitResponse"
+                },
+                "example": {
+                  "id": 24
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "기록 (commit) 실패 - 잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "기록 제목이 없는 경우": {
+                    "description": "기록 제목이 없는 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "기록 제목을 입력해주세요.",
+                      "error": "UNEXPECTED_ERROR"
+                    }
+                  },
+                  "기록 제목이 30자를 넘는 경우": {
+                    "description": "기록 제목이 30자를 넘는 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "기록 제목은 30자를 초과 할 수 없습니다.",
+                      "error": "UNEXPECTED_ERROR"
+                    }
+                  },
+                  "설명이 100자가 넘는 경우": {
+                    "description": "설명이 100자가 넘는 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "기록에 대한 설명은 100자를 초과 할 수 없습니다.",
+                      "error": "UNEXPECTED_ERROR"
+                    }
+                  },
+                  "문단의 순서가 유효하지 않은 경우": {
+                    "description": "문단의 순서가 유효하지 않은 경우",
+                    "value": {
+                      "status": 400,
+                      "message": "문단의 순서가 유효하지 않습니다.",
+                      "error": "BLOCK_SEQUENCE_INVALID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "기록 (commit) 실패 - 존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "해당 문서에 속한 브랜치가 아닐 경우": {
+                    "description": "해당 문서에 속한 브랜치가 아닐 경우",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 버전을 찾을 수 없습니다.",
+                      "error": "BRANCH_NOT_FOUND_OR_FORBIDDEN"
+                    }
+                  },
+                  "문단의 순서를 찾을 수 없습니다.": {
+                    "description": "문단의 순서를 찾을 수 없습니다.",
+                    "value": {
+                      "status": 404,
+                      "message": "문단의 순서를 찾을 수 없습니다.",
+                      "error": "BLOCK_SEQUENCE_NOT_FOUND"
+                    }
+                  },
+                  "존재하지 않는 브랜치": {
+                    "description": "존재하지 않는 브랜치",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 버전을 찾을 수 없습니다.",
+                      "error": "BRANCH_NOT_FOUND"
+                    }
+                  },
+                  "존재하지 않는 문서": {
+                    "description": "존재하지 않는 문서",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 문서를 찾을 수 없습니다.",
+                      "error": "DOCUMENT_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "기록 생성 실패 - MySQL 또는 MongoDB 데이터 처리 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB 데이터 처리 실패": {
+                    "description": "MySQL 또는 MongoDB 데이터 처리 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/code/signup-email": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "회원가입 인증코드 전송",
+        "description": "사용자가 입력한 이메일 주소로 회원가입을 위한 인증코드를 전송합니다.\n인증코드는 이메일로 전송되며, 제한된 시간(3분) 내에 입력되어야 합니다.\n이미 가입된 이메일 주소로 요청하는 경우 에러가 발생합니다.\n재전송 제한 시간(3분) 내에 다시 요청하면 재전송 실패 에러가 발생합니다.\n",
+        "operationId": "sendSignupCode",
+        "requestBody": {
+          "description": "회원가입 인증코드 요청 본문",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupCodeRequest"
+              },
+              "examples": {
+                "회원가입 인증코드 요청 예시": {
+                  "description": "회원가입 인증코드 요청 예시",
+                  "value": {
+                    "email": "user@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "인증코드 전송 성공"
+          },
+          "400": {
+            "description": "3분 이내 재전송 제한으로 인한 예외 발생",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "SEND_INTERVAL_TOO_SHORT": {
+                    "description": "SEND_INTERVAL_TOO_SHORT",
+                    "value": {
+                      "status": 400,
+                      "message": "인증 코드는 3분 후에 다시 요청할 수 있습니다.",
+                      "error": "SEND_INTERVAL_TOO_SHORT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/code/reset-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "비밀번호 변경 인증코드 전송",
+        "description": "사용자가 입력한 이메일 주소로 비밀번호 재설정을 위한 인증코드를 전송합니다.\n해당 이메일이 등록된 사용자 계정이어야 하며, 인증코드는 일정 시간 동안 유효합니다.\n존재하지 않는 사용자에게 요청 시 에러가 발생합니다.\n재전송 제한 시간(3분) 내에 다시 요청하면 재전송 실패 에러가 발생합니다.\n",
+        "operationId": "sendResetPwdCode",
+        "requestBody": {
+          "description": "비밀번호 변경 인증코드 요청 본문",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PwdResetCodeRequest"
+              },
+              "examples": {
+                "비밀번호 변경 인증코드 요청 예시": {
+                  "description": "비밀번호 변경 인증코드 요청 예시",
+                  "value": {
+                    "email": "user@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "인증코드 전송 성공"
+          },
+          "404": {
+            "description": "존재하지 않는 사용자",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "USER_NOT_FOUND": {
+                    "description": "USER_NOT_FOUND",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 이메일의 사용자를 찾을 수 없습니다.",
+                      "error": "USER_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "3분 이내 재전송 제한으로 인한 예외 발생",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "SEND_INTERVAL_TOO_SHORT": {
+                    "description": "SEND_INTERVAL_TOO_SHORT",
+                    "value": {
+                      "status": 400,
+                      "message": "인증 코드는 3분 후에 다시 요청할 수 있습니다.",
+                      "error": "SEND_INTERVAL_TOO_SHORT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/code/check": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "인증코드 검증",
+        "description": "이메일, 인증코드, 코드 타입(SIGNUP / RESET_PASSWORD)을 입력받아 인증코드의 유효성을 검증합니다.\n인증코드는 일정 시간 동안만 유효합니다.\n잘못된 코드, 만료된 코드, 시스템 에러 발생 시 각기 다른 응답이 반환됩니다.\n",
+        "operationId": "checkCode",
+        "requestBody": {
+          "description": "인증코드 검증 요청 본문",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CodeCheckRequest"
+              },
+              "examples": {
+                "인증코드 검증 요청 예시": {
+                  "description": "인증코드 검증 요청 예시",
+                  "value": {
+                    "email": "user@example.com",
+                    "code": "ABC123",
+                    "type": "SIGNUP"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "인증코드 검증 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCheckResponse"
+                },
+                "examples": {
+                  "검증 성공 응답 예시": {
+                    "description": "검증 성공 응답 예시",
+                    "value": {
+                      "passCode": "a1b2c3d4"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 인증코드 또는 만료된 코드",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "INVALID_CODE": {
+                    "description": "INVALID_CODE",
+                    "value": {
+                      "status": 400,
+                      "message": "인증코드가 올바르지 않습니다.",
+                      "error": "INVALID_CODE"
+                    }
+                  },
+                  "EXPIRED_CODE": {
+                    "description": "EXPIRED_CODE",
+                    "value": {
+                      "status": 400,
+                      "message": "인증코드가 만료되었습니다.",
+                      "error": "EXPIRED_CODE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "내부 서버 오류",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "INTERNAL_ERROR": {
+                    "description": "INTERNAL_ERROR",
+                    "value": {
+                      "status": 500,
+                      "message": "인증코드 처리 중 시스템 오류가 발생했습니다.",
+                      "error": "INTERNAL_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/{documentId}/branch/{branchId}": {
+      "delete": {
+        "tags": [
+          "Branch API"
+        ],
+        "summary": "버전 삭제",
+        "description": "버전을 삭제합니다. 삭제 조건은 아래와 같습니다:\n\n- 메인 버전(`fromCommit == null`)는 삭제 불가\n- 다른 버전이 이 버전을 기반(fromCommit)으로 만들어졌다면 삭제 불가\n- 블록, 시퀀스, 저장(MongoDB)도 함께 삭제됨\n",
+        "operationId": "deleteBranch",
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "path",
+            "description": "삭제할 버전 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 5
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "버전 삭제 성공"
+          },
+          "400": {
+            "description": "버전 삭제 실패 - 삭제 불가능한 버전",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "메인 버전 삭제 시도": {
+                    "description": "메인 버전 삭제 시도",
+                    "value": {
+                      "status": 400,
+                      "message": "기본 버전은 삭제 또는 수정할 수 없습니다.",
+                      "error": "MAIN_BRANCH_FIX_UNAVAILABLE"
+                    }
+                  },
+                  "파생된 버전이 존재": {
+                    "description": "파생된 버전이 존재",
+                    "value": {
+                      "status": 400,
+                      "message": "서브 버전이 있어 해당 버전을 삭제할 수 없습니다.",
+                      "error": "SUB_BRANCH_DELETE_UNAVAILABLE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "버전 삭제 실패 - 문서 또는 버전이 존재하지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 404,
+                  "message": "해당 버전을 찾을 수 없습니다.",
+                  "error": "BRANCH_NOT_FOUND"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "버전 삭제 실패 - MySQL 또는 MongoDB 저장 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB에 저장 실패": {
+                    "description": "MySQL 또는 MongoDB에 저장 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Branch API"
+        ],
+        "summary": "버전 이름 변경",
+        "description": "버전의 이름을 수정합니다. 메인버전의 이름은 수정할 수 없습니다.",
+        "operationId": "renameBranch",
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "path",
+            "description": "수정하려는 버전의 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchRenameRequest"
+              },
+              "example": {
+                "newName": "수정한 버전 이름"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "버전 이름 수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BranchRenameResponse"
+                },
+                "example": {
+                  "id": 1,
+                  "name": "수정한 버전 이름"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "버전 이름 수정 실패 - 해당 문서에 속한 버전이 아님",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 400,
+                  "message": "해당 버전을 찾을 수 없습니다.",
+                  "error": "BRANCH_NOT_FOUND_OR_FORBIDDEN"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "버전 이름 수정 실패 - 해당 id를 가진 버전 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 404,
+                  "message": "해당 버전을 찾을 수 없습니다.",
+                  "error": "BRANCH_NOT_FOUND"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "버전 이름 수정 실패 - MySQL 또는 MongoDB 저장 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB에 저장 실패": {
+                    "description": "MySQL 또는 MongoDB에 저장 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/{docId}": {
+      "delete": {
+        "tags": [
+          "Document API"
+        ],
+        "summary": "문서 삭제",
+        "description": "사용자 소유의 문서를 삭제합니다.\n관련된 모든 브랜치, 커밋, 저장 데이터들도 함께 정리됩니다.\n",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "문서 삭제 성공"
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "문서가 존재하지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 404,
+                  "message": "해당 문서를 찾을 수 없습니다.",
+                  "error": "DOCUMENT_NOT_FOUND"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버오류로 인한 문서 삭제 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Document API"
+        ],
+        "summary": "문서 제목 수정",
+        "description": "문서의 제목을 수정합니다.",
+        "operationId": "rename",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "제목을 수정할 문서의 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocTitleRequest"
+              },
+              "example": {
+                "title": "new Title"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "문서 제목 수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocCreateResponse"
+                },
+                "example": {
+                  "id": 1,
+                  "title": "Updated Title",
+                  "updatedAt": "2025-07-07T10:15:30Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "유효하지 않은 문서 제목 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "이미 존재하는 문서 제목": {
+                    "description": "이미 존재하는 문서 제목",
+                    "value": {
+                      "status": 400,
+                      "message": "이미 사용중인 제목입니다.",
+                      "error": "TITLE_DUPLICATION"
+                    }
+                  },
+                  "문서 제목이 빈칸(null, 공백 등)": {
+                    "description": "문서 제목이 빈칸(null, 공백 등)",
+                    "value": {
+                      "status": 400,
+                      "message": "문서제목을 입력해주세요.",
+                      "error": "VALIDATION_FAILED"
+                    }
+                  },
+                  "문서 제목이 최대 길이 초과(50자)": {
+                    "description": "문서 제목이 최대 길이 초과(50자)",
+                    "value": {
+                      "status": 400,
+                      "message": "문서제목은 50자를 초과 할 수 없습니다.",
+                      "error": "VALIDATION_FAILED"
+                    }
+                  },
+                  "현재 문서의 제목과 같은 제목으로 수정 요청": {
+                    "description": "현재 문서의 제목과 같은 제목으로 수정 요청",
+                    "value": {
+                      "status": 400,
+                      "message": "현재 제목과 동일한 제목입니다.",
+                      "error": "SAME_AS_CURRENT_TITLE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "문서 이름 수정 실패 - 존재하지 않는 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 404,
+                  "message": "해당 문서를 찾을 수 없습니다.",
+                  "error": "DOCUMENT_NOT_FOUND"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "문서 이름 수정 실패 - MySQL 또는 MongoDB 접근 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/{docId}/graph": {
+      "get": {
+        "tags": [
+          "Document API"
+        ],
+        "summary": "문서 하나의 기록 그래프 조회",
+        "description": "문서 ID를 기반으로 커밋 간선 정보와 브랜치 정보를 포함한 그래프 데이터를 조회합니다.",
+        "operationId": "getGraph",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "그래프 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitGraphResponse"
+                },
+                "example": {
+                  "title": "문서 제목",
+                  "commits": [
+                    {
+                      "id": 11,
+                      "branchId": 101,
+                      "title": "이건 첫번째 커밋",
+                      "description": "first",
+                      "createdAt": "2025-07-07T12:00:00"
+                    },
+                    {
+                      "id": 12,
+                      "branchId": 101,
+                      "title": "이건 두번째 커밋",
+                      "description": "second",
+                      "createdAt": "2025-07-07T15:00:00"
+                    },
+                    {
+                      "id": 13,
+                      "branchId": 101,
+                      "title": "이건 세번째 커밋",
+                      "description": "third",
+                      "createdAt": "2025-07-07T18:00:00"
+                    },
+                    {
+                      "id": 14,
+                      "branchId": 102,
+                      "title": "이건 네번째 커밋",
+                      "description": "12에서 파생된 커밋",
+                      "createdAt": "2025-07-07T20:00:00"
+                    }
+                  ],
+                  "edges": [
+                    {
+                      "from": 11,
+                      "to": 12
+                    },
+                    {
+                      "from": 12,
+                      "to": 13
+                    },
+                    {
+                      "from": 12,
+                      "to": 14
+                    }
+                  ],
+                  "branches": [
+                    {
+                      "id": 101,
+                      "name": "main",
+                      "createdAt": "2025-07-07T12:00:00",
+                      "fromCommitId": null,
+                      "rootCommitId": 11,
+                      "leafCommitId": 13,
+                      "saveId": null
+                    },
+                    {
+                      "id": 102,
+                      "name": "sub1",
+                      "createdAt": "2025-07-07T20:00:00",
+                      "fromCommitId": 12,
+                      "rootCommitId": 14,
+                      "leafCommitId": 14,
+                      "saveId": 1001
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "문서를 찾을 수 없음.": {
+                    "description": "문서를 찾을 수 없음.",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 문서를 찾을 수 없습니다.",
+                      "error": "DOCUMENT_NOT_FOUND"
+                    }
+                  },
+                  "버전을 찾을 수 없음.": {
+                    "description": "버전을 찾을 수 없음.",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 버전을 찾을 수 없습니다.",
+                      "error": "BRANCH_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버오류로 인한 그래프 조회 실패.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/{docId}/commit/{commitId}": {
+      "get": {
+        "tags": [
+          "Commit API"
+        ],
+        "summary": "유저가 기존에 만든 기록(commit)을 조회합니다",
+        "description": "유저가 소유한 문서에서 만든 기록을 조회합니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n",
+        "operationId": "getCommit",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "기록 조회하려는 문서의 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "commitId",
+            "in": "path",
+            "description": "조회하려는 기록의 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "기록 (commit) 조회 성공 - content 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitResponse"
+                },
+                "example": {
+                  "title": "문서 초안 작성 완료",
+                  "description": "1차 초안 커밋입니다.",
+                  "branchId": 1,
+                  "blocks": [
+                    {
+                      "id": "mhTl6ghSkV",
+                      "type": "paragraph",
+                      "data": {
+                        "text": "Hey. Meet the new Editor. On this picture you can see it in action. Then, try a demo 🤓"
+                      }
+                    },
+                    {
+                      "id": "os_YI4eub4",
+                      "type": "list",
+                      "data": {
+                        "type": "unordered",
+                        "items": [
+                          "It is a block-style editor",
+                          "It returns clean data output in JSON",
+                          "Designed to be extendable and pluggable with a <a href=\"https://editorjs.io/creating-a-block-tool\">simple API</a>"
+                        ]
+                      }
+                    }
+                  ],
+                  "blockOrders": [
+                    "mhTl6ghSkV",
+                    "l98dyx3yjb",
+                    "os_YI4eub4"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "기록 (commit) 실패 - 존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 문서": {
+                    "description": "존재하지 않는 문서",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 문서를 찾을 수 없습니다.",
+                      "error": "DOCUMENT_NOT_FOUND"
+                    }
+                  },
+                  "존재하지 않는 기록": {
+                    "description": "존재하지 않는 기록",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 기록를 찾을 수 없습니다.",
+                      "error": "COMMIT_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "기록 조회 실패 - MySQL 또는 MongoDB 데이터 처리 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB 데이터 처리 실패": {
+                    "description": "MySQL 또는 MongoDB 데이터 처리 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Commit API"
+        ],
+        "summary": "기록 삭제",
+        "description": "기록을 삭제합니다.\n🔐 이 API는 세션 로그인 상태에서 호출되어야 하며,\n클라이언트는 쿠키(`JSESSIONID`)를 통해 인증 정보를 전송해야 합니다.\n\n삭제 조건은 아래와 같습니다:\n\n- 각 버전의 LeafCommit만 삭제 가능\n- 어느 버전의 FromCommit이면 삭제 불가\n- 버전의 RootCommit은 삭제 불가(RootCommit까지 삭제하고 싶은 경우 버전 삭제를 권장합니다)\n",
+        "operationId": "deleteCommit",
+        "parameters": [
+          {
+            "name": "docId",
+            "in": "path",
+            "description": "기록 삭제하려는 문서의 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "commitId",
+            "in": "path",
+            "description": "삭제하려는 기록의 id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "기록 삭제 성공"
+          },
+          "400": {
+            "description": "기록 삭제 실패 - 삭제 불가능한 기록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "삭제하려는 기록이 LeafCommit이 아닐 경우 삭제할 수 없다.": {
+                    "description": "삭제하려는 기록이 LeafCommit이 아닐 경우 삭제할 수 없다.",
+                    "value": {
+                      "status": 400,
+                      "message": "버전의 마지막 기록이 아닙니다.",
+                      "error": "IS_NOT_LEAF_COMMIT"
+                    }
+                  },
+                  "삭제하려는 기록이 FromCommit, RootCommit인 경우 삭제할 수 없다.": {
+                    "description": "삭제하려는 기록이 FromCommit, RootCommit인 경우 삭제할 수 없다.",
+                    "value": {
+                      "status": 400,
+                      "message": "이 기록은 삭제할 수 없습니다.",
+                      "error": "CAN_NOT_DELETE_COMMIT"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "기록 삭제 실패 - 존재하지 않는 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "존재하지 않는 문서": {
+                    "description": "존재하지 않는 문서",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 문서를 찾을 수 없습니다.",
+                      "error": "DOCUMENT_NOT_FOUND"
+                    }
+                  },
+                  "존재하지 않는 기록": {
+                    "description": "존재하지 않는 기록",
+                    "value": {
+                      "status": 404,
+                      "message": "해당 기록를 찾을 수 없습니다.",
+                      "error": "COMMIT_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "기록 삭제 실패 - MySQL 또는 MongoDB 데이터 처리 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "MySQL 또는 MongoDB 데이터 처리 실패": {
+                    "description": "MySQL 또는 MongoDB 데이터 처리 실패",
+                    "value": {
+                      "status": 500,
+                      "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                      "error": "DATABASE_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/sidebar": {
+      "get": {
+        "tags": [
+          "Document API"
+        ],
+        "summary": "사이드바용 문서 목록 조회",
+        "description": "사이드바에 표시할 요약된 문서 목록을 조회합니다.\n기본 정렬은 updatedAt, 기본 정렬 순서는 desc입니다.\n",
+        "operationId": "readListSidebar",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "정렬 기준 필드 (예: updatedAt, createdAt)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "updatedAt"
+            },
+            "example": "updatedAt"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "정렬 순서 (asc 또는 desc)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "desc"
+            },
+            "example": "desc"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "페이지 번호 (0부터 시작)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "페이지 크기",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "사이드바 문서 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageDocListSimpleResponse"
+                },
+                "example": {
+                  "content": [
+                    {
+                      "id": 3,
+                      "title": "새 문서 제목 3",
+                      "createdAt": "2025-07-22T04:48:43.036421+09:00",
+                      "updatedAt": "2025-07-22T04:48:43.065674+09:00",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 3
+                      }
+                    },
+                    {
+                      "id": 2,
+                      "title": "새 문서 제목 2",
+                      "createdAt": "2025-07-22T04:48:40.02776+09:00",
+                      "updatedAt": "2025-07-22T04:48:40.056721+09:00",
+                      "recent": {
+                        "recentType": "COMMIT",
+                        "recentTypeId": 2
+                      }
+                    },
+                    {
+                      "id": 1,
+                      "title": "새 문서 제목",
+                      "createdAt": "2025-07-22T04:48:35.242338+09:00",
+                      "updatedAt": "2025-07-22T04:48:35.348708+09:00",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 1
+                      }
+                    }
+                  ],
+                  "pageable": {
+                    "pageNumber": 0,
+                    "pageSize": 10,
+                    "sort": {
+                      "empty": false,
+                      "sorted": true,
+                      "unsorted": false
+                    },
+                    "offset": 0,
+                    "paged": true,
+                    "unpaged": false
+                  },
+                  "last": true,
+                  "totalPages": 1,
+                  "totalElements": 3,
+                  "first": true,
+                  "size": 10,
+                  "number": 0,
+                  "sort": {
+                    "empty": false,
+                    "sorted": true,
+                    "unsorted": false
+                  },
+                  "numberOfElements": 3,
+                  "empty": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "정렬 실패 - 정렬 옵션이 잘못됨",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "정렬 기준이 잘못됨": {
+                    "description": "정렬 기준이 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "지원하지 않는 정렬 기준입니다.",
+                      "error": "UNSUPPORTED_SORT_TYPE"
+                    }
+                  },
+                  "정렬 방향이 잘못됨": {
+                    "description": "정렬 방향이 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "지원하지 않는 정렬 방향입니다.",
+                      "error": "UNSUPPORTED_DIRECTION_TYPE"
+                    }
+                  },
+                  "페이지 크기가 잘못됨": {
+                    "description": "페이지 크기가 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "페이지 크기는 0 이상이어야 합니다.",
+                      "error": "INVALID_PAGE_SIZE"
+                    }
+                  },
+                  "페이지 번호가 잘못됨": {
+                    "description": "페이지 번호가 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "페이지 번호는 0 이상이어야 합니다.",
+                      "error": "INVALID_PAGE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버오류로 인한 문서 조회 실패.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document/search": {
+      "get": {
+        "tags": [
+          "Document API"
+        ],
+        "summary": "문서 제목 검색",
+        "description": "로그인한 사용자의 문서 중 제목에 해당 키워드가 포함된 문서를 검색합니다.\n검색 결과는 페이지네이션 및 정렬 조건(`sort`, `order`)에 따라 반환됩니다.\n기본 정렬 필드는 `updatedAt`, 정렬 순서는 `desc`입니다.\n",
+        "operationId": "search",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "검색할 키워드",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+            },
+            "example": "기획서"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "정렬 기준 필드 (예: updatedAt, createdAt)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "updatedAt"
+            },
+            "example": "updatedAt"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "정렬 순서 (asc 또는 desc)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "desc"
+            },
+            "example": "desc"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "페이지 번호 (0부터 시작)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "페이지 크기",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "문서 검색 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageDocListResponse"
+                },
+                "example": {
+                  "content": [
+                    {
+                      "id": 3,
+                      "title": "9월 기획서",
+                      "createdAt": "2025-07-24T23:08:36.088612+09:00",
+                      "updatedAt": "2025-07-24T23:08:36.114375+09:00",
+                      "preview": "미리보기 없음",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 3
+                      }
+                    },
+                    {
+                      "id": 2,
+                      "title": "6월 기획서",
+                      "createdAt": "2025-07-24T23:08:32.066607+09:00",
+                      "updatedAt": "2025-07-24T23:08:32.088371+09:00",
+                      "preview": "미리보기 없음",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 2
+                      }
+                    },
+                    {
+                      "id": 1,
+                      "title": "5월 기획서",
+                      "createdAt": "2025-07-24T23:08:27.511586+09:00",
+                      "updatedAt": "2025-07-24T23:08:27.648299+09:00",
+                      "preview": "미리보기 없음",
+                      "recent": {
+                        "recentType": "SAVE",
+                        "recentTypeId": 1
+                      }
+                    }
+                  ],
+                  "pageable": {
+                    "pageNumber": 0,
+                    "pageSize": 10,
+                    "sort": {
+                      "empty": false,
+                      "sorted": true,
+                      "unsorted": false
+                    },
+                    "offset": 0,
+                    "paged": true,
+                    "unpaged": false
+                  },
+                  "last": true,
+                  "totalElements": 3,
+                  "totalPages": 1,
+                  "first": true,
+                  "size": 10,
+                  "number": 0,
+                  "sort": {
+                    "empty": false,
+                    "sorted": true,
+                    "unsorted": false
+                  },
+                  "numberOfElements": 3,
+                  "empty": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "정렬 실패 - 정렬 옵션이 잘못됨",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "정렬 기준이 잘못됨": {
+                    "description": "정렬 기준이 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "지원하지 않는 정렬 기준입니다.",
+                      "error": "UNSUPPORTED_SORT_TYPE"
+                    }
+                  },
+                  "정렬 방향이 잘못됨": {
+                    "description": "정렬 방향이 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "지원하지 않는 정렬 방향입니다.",
+                      "error": "UNSUPPORTED_DIRECTION_TYPE"
+                    }
+                  },
+                  "페이지 크기가 잘못됨": {
+                    "description": "페이지 크기가 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "페이지 크기는 0 이상이어야 합니다.",
+                      "error": "INVALID_PAGE_SIZE"
+                    }
+                  },
+                  "페이지 번호가 잘못됨": {
+                    "description": "페이지 번호가 잘못됨",
+                    "value": {
+                      "status": 400,
+                      "message": "페이지 번호는 0 이상이어야 합니다.",
+                      "error": "INVALID_PAGE"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 - 로그인 세션이 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 401,
+                  "message": "로그인이 필요합니다.",
+                  "error": "LOGIN_REQUIRED"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "문서 검색 실패 - 존재하지 않는 커밋",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 404,
+                  "message": "해당 기록을 찾을 수 없습니다.",
+                  "error": "COMMIT_NOT_FOUND"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "문서 검색 실패 - MySQL 또는 MongoDB 접근 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "데이터 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                  "error": "DATABASE_ERROR"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/session/check": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "세션 유효성 확인",
+        "description": "현재 로그인된 사용자의 세션이 유효한지 확인하고 사용자 정보를 반환합니다.",
+        "operationId": "checkSession",
+        "responses": {
+          "200": {
+            "description": "세션 유효성 확인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCheckResponse"
+                },
+                "examples": {
+                  "성공 응답 예시": {
+                    "description": "성공 응답 예시",
+                    "value": {
+                      "id": 1,
+                      "name": "이장님"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "유효하지 않은 세션 - 로그인 필요",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "LOGIN_REQUIRED": {
+                    "description": "LOGIN_REQUIRED",
+                    "value": {
+                      "status": 401,
+                      "message": "로그인이 필요합니다.",
+                      "error": "LOGIN_REQUIRED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SaveUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        }
+      },
+      "SaveUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "UserSignupRequest": {
+        "type": "object",
+        "description": "회원가입 요청",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "회원 이름",
+            "example": "이장님",
+            "maxLength": 2147483647,
+            "minLength": 2
+          },
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "description": "비밀번호 (대소문자+숫자 조합 8자 이상)",
+            "example": "Password123",
+            "maxLength": 2147483647,
+            "minLength": 8,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$"
+          },
+          "passCode": {
+            "type": "string",
+            "description": "검증 완료를 나타내는 코드",
+            "example": "a1b2c3d4",
+            "minLength": 1,
+            "pattern": "^[a-z0-9]{8}$"
+          }
+        },
+        "required": [
+          "email",
+          "name",
+          "passCode",
+          "password"
+        ]
+      },
+      "UserSignupResponse": {
+        "type": "object",
+        "description": "회원가입 응답",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "가입한 사용자 ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "가입된 사용자 이름",
+            "example": "홍길동"
+          }
+        }
+      },
+      "PasswordResetRequest": {
+        "type": "object",
+        "description": "비밀번호 변경 요청",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "description": "새 비밀번호 (대소문자+숫자 조합 8자 이상)",
+            "example": "NewPassword123",
+            "maxLength": 2147483647,
+            "minLength": 8,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$"
+          },
+          "passCode": {
+            "type": "string",
+            "description": "검증 완료를 나타내는 코드",
+            "example": "a1b2c3d4",
+            "minLength": 1,
+            "pattern": "^[a-z0-9]{8}$"
+          }
+        },
+        "required": [
+          "email",
+          "passCode",
+          "password"
+        ]
+      },
+      "UserLoginRequest": {
+        "type": "object",
+        "description": "로그인 요청",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "description": "비밀번호 (대소문자+숫자 조합 8자 이상)",
+            "example": "Password123",
+            "maxLength": 2147483647,
+            "minLength": 8,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "UserLoginResponse": {
+        "type": "object",
+        "description": "로그인 응답",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "로그인한 사용자 ID",
+            "example": 1
+          }
+        }
+      },
+      "DocTitleRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "DocCreateResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "saveId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "BranchCreateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "fromCommitId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "BranchCreateResponse": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "saveId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "BlockDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        }
+      },
+      "MergeCommitRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "baseCommitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "targetCommitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlockDto"
+            }
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "CreateCommitResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "CreateCommitRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "branchId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlockDto"
+            }
+          },
+          "blockOrders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "SignupCodeRequest": {
+        "type": "object",
+        "description": "회원가입용 인증코드 요청",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "PwdResetCodeRequest": {
+        "type": "object",
+        "description": "비밀번호 변경용 인증코드 요청",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "CodeCheckRequest": {
+        "type": "object",
+        "description": "인증코드 검증 요청",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com",
+            "minLength": 1
+          },
+          "code": {
+            "type": "string",
+            "description": "인증코드",
+            "example": "ABC123",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "description": "코드 타입 (SIGNUP 또는 RESET_PASSWORD)",
+            "enum": [
+              "SIGNUP",
+              "RESET_PASSWORD"
+            ],
+            "example": "SIGNUP"
+          }
+        },
+        "required": [
+          "code",
+          "email",
+          "type"
+        ]
+      },
+      "CodeCheckResponse": {
+        "type": "object",
+        "description": "인증코드 검증 응답",
+        "properties": {
+          "passCode": {
+            "type": "string",
+            "description": "검증 완료를 나타내는 코드",
+            "example": "a1b2c3d4"
+          }
+        }
+      },
+      "BranchRenameRequest": {
+        "type": "object",
+        "properties": {
+          "newName": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "newName"
+        ]
+      },
+      "BranchRenameResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "PageDocListResponse": {
+        "description": "문서 목록 페이지 응답 (DocListResponse 기반)"
+      },
+      "SaveGetResponse": {
+        "type": "object",
+        "properties": {
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        }
+      },
+      "CompareMergeCommitResponse": {
+        "type": "object",
+        "properties": {
+          "base": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "target": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        }
+      },
+      "CommitGraphResponse": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "commits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphCommitDto"
+            }
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphEdgeDto"
+            }
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphBranchDto"
+            }
+          }
+        }
+      },
+      "GraphBranchDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fromCommitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rootCommitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "leafCommitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "saveId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "GraphCommitDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "branchId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GraphEdgeDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "to": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "CommitResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        }
+      },
+      "PageDocListSimpleResponse": {
+        "description": "문서 목록의 페이지 응답"
+      },
+      "SessionCheckResponse": {
+        "type": "object",
+        "description": "세션 유효성 확인 응답",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "로그인 상태의 사용자 ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "로그인 상태의 사용자 이름",
+            "example": "홍길동"
+          }
+        }
+      }
+    }
+  }
+}
